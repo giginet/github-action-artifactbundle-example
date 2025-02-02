@@ -24,8 +24,8 @@ jobs:
           BUNDLE_PATH="${{ steps.artifactbundle.outputs.bundle_path }}"
           SHA256="${{ steps.artifactbundle.outputs.bundle_sha256 }}"
           TAG_NAME="${{ github.event.release.tag_name }}"
-          gh release upload "$TAG_NAME" "$BUNDLE_PATH"
+          gh release upload "${TAG_NAME}" "${BUNDLE_PATH}"
           NEW_BODY="${BODY}\n${SHA256}"
-          gh release edit "$TAG_NAME" --notes "$NEW_BODY"
+          gh release edit "${TAG_NAME}" --notes "${NEW_BODY}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
