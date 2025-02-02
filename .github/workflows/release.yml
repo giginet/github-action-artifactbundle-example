@@ -1,6 +1,6 @@
 on:
   release:
-    types: [created, published, edited]
+    types: [published, edited]
 name: Upload Artifact Bundle to Release
 env:
   DEVELOPER_DIR: '/Applications/Xcode_16.2.app/Contents/Developer'
@@ -23,11 +23,10 @@ jobs:
           BODY="${{ github.event.release.body }}"
           FILENAME="${{ steps.artifactbundle.outputs.bundle_filename }}"
           BUNDLE_PATH="${{ steps.artifactbundle.outputs.bundle_path }}"
-          SHA256="${{ steps.artifactbundle.output.bundle_sha256 }}"
+          SHA256="${{ steps.artifactbundle.outputs.bundle_sha256 }}"
           TAG_NAME="${{ github.event.release.tag_name }}"
-          echo $BODY
           gh release upload "$FILENAME" "$BUNDLE_PATH"
           NEW_BODY="${BODY}\n${SHA256}"
-          gh release update "$TAG_NAME" --body "$NEW_BODY"
+          gh release edit "$TAG_NAME" --notes "$NEW_BODY"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
