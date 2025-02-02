@@ -1,0 +1,28 @@
+on:
+  release:
+    types: [created, published, edited]
+name: Upload Artifact Bundle to Release
+env:
+  DEVELOPER_DIR: '/Applications/Xcode_16.3.app/Contents/Developer'
+jobs:
+  release:
+    name: Build and Upload Artifact Bundle
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build for arm64
+        run: swift build --disable-sandbox -c release --arch arm64
+      - name: Build for x86_64
+        run: swift build --disable-sandbox -c release --arch x86_64
+      - uses: giginet/github-action-artifactbundle@main
+        with:
+          artifact_name: myexecutable
+      - name: Upload Artifact Bundle to Release
+        run: |
+          BODY=${{ github.event.release.body }}
+          echo $BODY
+          gh release upload ${{ jobs.release.outputs.bundle_filename }} ${{ jobs.release.outputs.bundle_path }}
+          NEW_BODY=$(cat $BODY '\n' ${{ jobs.release.output.bundle_sha256 }})
+          gh release update ${{ github.event.release.tag_name }} --body "$NEW_BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
