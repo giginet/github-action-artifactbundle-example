@@ -15,7 +15,6 @@ jobs:
         id: artifactbundle
         with:
           artifact_name: myexecutable
-          version: 1.0.0
       - name: Upload Artifact Bundle to Release
         run: |
           BODY="${{ github.event.release.body }}"
